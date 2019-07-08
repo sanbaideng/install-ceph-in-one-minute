@@ -13,15 +13,14 @@ sed -i '/aliyuncs/d' /etc/yum.repos.d/CentOS-Base.repo
 sed -i 's/$releasever/7/g' /etc/yum.repos.d/CentOS-Base.repo
 sed -i '/aliyuncs/d' /etc/yum.repos.d/epel.repo
 
-echo "
-[ceph]
-name=ceph
-baseurl=http://mirrors.aliyun.com/ceph/rpm-hammer/el7/x86_64/
+echo "[Ceph]
+name=Ceph packages for $basearch
+baseurl=http://mirrors.163.com/ceph/rpm-jewel/el7/$basearch
+enabled=1
 gpgcheck=0
-[ceph-noarch]
-name=cephnoarch
-baseurl=http://mirrors.aliyun.com/ceph/rpm-hammer/el7/noarch/
-gpgcheck=0
+type=rpm-md
+gpgkey=https://mirrors.163.com/ceph/keys/release.asc
+priority=1
 " > /etc/yum.repos.d/ceph.repo
 
 yum install ceph ceph-radosgw ceph-deploy -y
@@ -46,6 +45,7 @@ chown ceph:ceph /var/run/ceph/
 mkdir -p /osd & rm -rf /osd/*
 chown ceph:ceph /osd
 ceph-deploy mon create-initial
+ceph-deploy mds create $HOSTNAME
 ceph-deploy osd prepare $HOSTNAME:/osd
 ceph-deploy osd activate  $HOSTNAME:/osd
 
